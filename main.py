@@ -51,7 +51,7 @@ class GetTask(StatesGroup):
 
 
 @dp.message(F.text == "➕ Добавить задачу")
-@dp.message(Command("add"))
+@dp.message(Command("add_task"))
 async def add_task(message: Message, state: FSMContext):
     await message.answer("📝 Как назовём вашу задачу?")
     await state.set_state(AddTask.get_title)
@@ -91,7 +91,7 @@ async def add_due(message: Message, state: FSMContext):
 
 
 @dp.message(F.text == "🗑 Удалить задачу")
-@dp.message(Command("delete"))
+@dp.message(Command("delete_task"))
 async def delete_start(message: Message, state: FSMContext):
     await message.answer("🗑 Введите ID задачи, которую хотите удалить:")
     await state.set_state(DeleteTask.get_id)
@@ -133,7 +133,6 @@ async def update_start(message: Message, state: FSMContext):
 
 @dp.message(UpadeteTask.get_id)
 async def update_get_id(message: Message, state: FSMContext):
-
     task_id = message.text
     if not task_id.isdigit():
         await message.answer("⚠️ ID должен быть числом. Попробуйте ещё раз:")
@@ -202,7 +201,7 @@ async def update_get_status(message: Message, state: FSMContext):
     await state.clear()
 
 
-@dp.message(Command("my_task"))
+@dp.message(Command("get_task"))
 async def my_task(message: Message, state: FSMContext):
     await message.answer("🔎 Введите ID задачи, которую хотите посмотреть:")
     await state.set_state(GetTask.get_id)
@@ -218,7 +217,7 @@ async def my_task_get_id(message: Message, state: FSMContext):
         return
 
     
-    task = await get_task_by_id(message.from_user.id, int(id))
+    task = await get_task_by_id(message.from_user.id, int(task_id))
 
     if not task:
         await message.answer("🔎 Задача с таким ID не найдена.")
@@ -260,6 +259,8 @@ async def my_tasks(message: Message):
     await message.answer(text)
 
 
+
+
 @dp.message(Command("start"))
 async def start(message: Message):
     user = message.from_user
@@ -275,6 +276,40 @@ async def start(message: Message):
 """, reply_markup=main_kb)
 
 
+
+
+@dp.message(Command("help"))
+async def delete_start(message: Message):
+    await message.answer("""
+📋 **ЦЕНТР ПОМОЩИ**
+
+Добро пожаловать в Task Manager! ✨
+
+Здесь ты можешь организовать свои дела, следить за сроками и контролировать выполнение задач.
+
+🚀 **Доступные команды**
+
+➕ `/add_task` — создать новую задачу  
+📋 `/my_tasks` — посмотреть все свои задачи  
+🔎 `/get_task` — посмотреть подробности задачи  
+✏️ `/update` — изменить название, описание и статус задачи  
+🗑 `/delete_task` — удалить задачу  
+❓ `/help` — открыть это меню помощи
+
+💡 **Как пользоваться ботом?**
+
+1️⃣ Создай задачу и укажи её название, описание и срок выполнения.
+
+2️⃣ Открой список своих задач, чтобы посмотреть текущие дела.
+
+3️⃣ Используй обновление, чтобы изменить информацию о задаче или её статус.
+
+4️⃣ Удаляй задачи, которые больше не нужны.
+
+🎯 **Маленький совет:** регулярно обновляй статусы задач, чтобы видеть свой прогресс и ничего не забывать!
+
+Удачного планирования! 🌟
+""")
 
 
 async def  main():
